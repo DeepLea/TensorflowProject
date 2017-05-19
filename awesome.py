@@ -2,10 +2,9 @@
 __year__ = 2017
 __auth__ = "Per, Marcus & Johanna"
 ##
-import tensorflow as tf
 
-import numpy as np
 import tensorflow as tf
+import numpy as np
 
 data = np.load("data.npy")
 target = np.load("target.npy")
@@ -161,6 +160,25 @@ print("test accuracy %g"%accuracy.eval(feed_dict={
     x: np.squeeze(np.array([data[seventyfive+1: LENGTH-1]])), y_: np.squeeze(np.array([yOneHot[seventyfive+1:LENGTH-1]])), keep_prob: 1.0}))
 
 ##############################################################################
+
+personNum = [0] * OUTPUT_SIZE
+personRig = [0] * OUTPUT_SIZE
+
+for i in range(seventyfive+1, LENGTH-1):
+  accTemp = accuracy.eval(feed_dict={x: np.array([data[i]]), y_: np.array([yOneHot[i]]), keep_prob: 1.0})
+  person = Y[i]
+  personNum[person-1] += 1
+  personRig[person-1] += accTemp
+
+np.save("personNum.npy",personNum)
+np.save("personRig.npy",personRig)
+  
+  
+  
+
+
+
+
 
 
 
