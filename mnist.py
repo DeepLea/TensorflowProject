@@ -93,10 +93,10 @@ h_pool2 = max_pool_2(h_conv2)
 
 
 
-W_fc1 = weight_variable([55* 55* 192, 1024])
+W_fc1 = weight_variable([55* 55* 64, 1024])
 b_fc1 = bias_variable([1024])
 
-h_pool2_flat = tf.reshape(h_pool2, [-1, 55* 55* 192])
+h_pool2_flat = tf.reshape(h_pool2, [-1, 55* 55* 64])
 h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
 
 
@@ -125,9 +125,9 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 sess.run(tf.global_variables_initializer())
 
-seventyfive = int(round(LENGTH*0.75))
+seventyfive = int(round(LENGTH*0.70))
 
-for i in range(2):
+for i in range(10):
   #TODO
   batch_xs = np.squeeze(np.array([lfw_people.data[0:seventyfive,:]]))
   batch_ys = np.squeeze(np.array([yOneHot[0:seventyfive,:]]))
