@@ -19,7 +19,7 @@ LENGTH = len(data)
 
 Y = target
 yOneHot = np.zeros((INPUT_SIZE, OUTPUT_SIZE),  dtype=np.int)
-print(len(Y))
+
 for index,target in enumerate(Y):  
   yOneHot[index, target-1] = 1
 
@@ -142,27 +142,27 @@ sess.run(tf.global_variables_initializer())
 ##############################################################################
 
 ## TODO set this to something larger like 0.75 % of all data
-seventyfive = int(round(LENGTH*0.10))
-
-for i in range(2):
-  batch_xs = np.squeeze(np.array([data[0:seventyfive,:]]))
-  batch_ys = np.squeeze(np.array([yOneHot[0:seventyfive,:]]))
-  print(batch_xs.shape)
-  print(batch_ys.shape)
-  if i > 0:
-    train_accuracy = accuracy.eval(feed_dict={
-
-        x:batch_xs, y_: batch_ys, keep_prob: 1.0})
-    print("step %d, training accuracy %g"%(i, train_accuracy))
-  train_step.run(feed_dict={x: batch_xs, y_: batch_ys, keep_prob: 0.5})
+seventyfive = int(round(LENGTH*0.75))
+batchsize = 64
+for j in range(20):
+  for i in range(seventyfive/batchsize + 1): 
+    if i == seventyfive/batchsize:
+      batch_xs = np.squeeze(np.array([data[i*batchsize:seventyfive,:]]))
+      batch_ys = np.squeeze(np.array([yOneHot[i*batchsize:seventyfive,:]]))
+    else:
+      batch_xs = np.squeeze(np.array([data[i*batchsize:i*batchsize+batchsize-1,:]]))
+      batch_ys = np.squeeze(np.array([yOneHot[i*batchsize:i*batchsize+batchsize-1,:]]))
+    train_step.run(feed_dict={x: batch_xs, y_: batch_ys, keep_prob: 0.5})
+  train_accuracy = accuracy.eval(feed_dict={x:batch_xs, y_: batch_ys, keep_prob: 1.0})
+  print("step %d, training accuracy(last batch) %g"%(j, train_accuracy))
 
 print("test accuracy %g"%accuracy.eval(feed_dict={
     x: np.squeeze(np.array([data[seventyfive+1: LENGTH-1]])), y_: np.squeeze(np.array([yOneHot[seventyfive+1:LENGTH-1]])), keep_prob: 1.0}))
 
 ##############################################################################
 
-personNum = [0] * OUTPUT_SIZE
-personRig = [0] * OUTPUT_SIZE
+personNum = [0] * (OUTPUT_SIZE+1)
+personRig = [0] * (OUTPUT_SIZE+1)
 
 for i in range(seventyfive+1, LENGTH-1):
   accTemp = accuracy.eval(feed_dict={x: np.array([data[i]]), y_: np.array([yOneHot[i]]), keep_prob: 1.0})
@@ -170,11 +170,12 @@ for i in range(seventyfive+1, LENGTH-1):
   personNum[person-1] += 1
   personRig[person-1] += accTemp
 
+for i in range(0,OUTPUT_SIZE):
+  print(target_names[i] + ": " + str(100*float(personRig[i])/float(personNum[i])) + " % Accuracy")
+
 np.save("personNum.npy",personNum)
 np.save("personRig.npy",personRig)
-  
-  
-  
+
 
 
 
