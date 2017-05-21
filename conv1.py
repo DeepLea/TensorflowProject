@@ -97,7 +97,7 @@ h_pool2 = max_pool_2(h_conv2)
 W_fc1 = weight_variable([28* 28* 192, 1024])
 b_fc1 = bias_variable([1024])
 
-h_pool2_flat = tf.reshape(h_pool2, [-1, 28* 28* 192])
+h_pool2_flat = tf.reshape(h_pool2, [-1, 55* 55* 192])
 h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
 
 
@@ -119,7 +119,7 @@ cross_entropy = tf.reduce_mean(
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 
 
-correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
+correct_prediction = tf.equal(tf.argmax(y_conv), tf.argmax(y_))
 
 
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -130,10 +130,12 @@ sess.run(tf.global_variables_initializer())
 seventyfive = int(round(LENGTH*0.75))
 
 for i in range(10):
-  #TODO
+  
   batch_xs = np.squeeze(np.array([lfw_people.data[0:seventyfive,:]]))
   batch_ys = np.squeeze(np.array([yOneHot[0:seventyfive,:]]))
-  if i%1 == 0:
+  print(batch_ys.shape)
+  print(batch_xs.shape)
+  if i > 0:
     train_accuracy = accuracy.eval(feed_dict={
     	#TODO
         x:batch_xs, y_: batch_ys, keep_prob: 1.0})
